@@ -27,7 +27,7 @@ import networkx as nx
 import pandas
 from longling import wf_open, config_logging, path_append
 from tqdm import tqdm
-
+from typing import Optional
 
 logger = config_logging(logger="junyi", console_log_level="info")
 
@@ -47,7 +47,11 @@ def build_ku_dict(source, target):
 
 def extract_prerequisite(source, target, ku_dict):
     """in target: (A, B) means predecessor --> successor"""
-    with codecs.open(source, encoding="utf-8") as f, open(ku_dict) as kf, wf_open(target) as wf:
+    with (
+        codecs.open(source, encoding="utf-8") as f,
+        open(ku_dict) as kf,
+        wf_open(target) as wf,
+    ):
         ku_dict = json.load(kf)
 
         prerequisite_edges = []
@@ -56,7 +60,7 @@ def extract_prerequisite(source, target, ku_dict):
             if not line[2]:
                 continue
             successor = ku_dict[line[0]]
-            for prerequisite in line[2].split(','):
+            for prerequisite in line[2].split(","):
                 predecessor = ku_dict[prerequisite]
                 if predecessor == successor:
                     continue
@@ -95,7 +99,11 @@ def extract_similarity(source, target, ku_dict):
     If v is small, A and B should be considered as not similar.
     """
     similarity = []
-    with codecs.open(source, encoding="utf-8") as f, open(ku_dict) as kf, wf_open(target) as wf:
+    with (
+        codecs.open(source, encoding="utf-8") as f,
+        open(ku_dict) as kf,
+        wf_open(target) as wf,
+    ):
         f.readline()
         ku_dict = json.load(kf)
         for line in csv.reader(f):
@@ -113,7 +121,11 @@ def extract_difficulty(source, target, ku_dict):
     If v is small, A and B should be considered as not similar.
     """
     difficulty = []
-    with codecs.open(source, encoding="utf-8") as f, open(ku_dict) as kf, wf_open(target) as wf:
+    with (
+        codecs.open(source, encoding="utf-8") as f,
+        open(ku_dict) as kf,
+        wf_open(target) as wf,
+    ):
         f.readline()
         ku_dict = json.load(kf)
         for line in csv.reader(f):
@@ -125,21 +137,24 @@ def extract_difficulty(source, target, ku_dict):
         json.dump(difficulty, wf, indent=2)
 
 
-def build_knowledge_graph(src_root: str,
-                          tar_root: (str, None)=None,
-                          ku_dict_path: str = None,
-                          prerequisite_path: (str, None)=None,
-                          similarity_path: (str, None)=None,
-                          difficulty_path: (str, None)=None):
+def build_knowledge_graph(
+    src_root: str,
+    tar_root: Optional[str] = None,
+    ku_dict_path: str = None,
+    prerequisite_path: Optional[str] = None,
+    similarity_path: Optional[str] = None,
+    difficulty_path: Optional[str] = None,
+):
     tar_root = tar_root if tar_root is not None else src_root
     exercise_src = path_append(src_root, "junyi_Exercise_table.csv")
-
     assert ku_dict_path is not None
 
     relation_src = merge_relationship_annotation(
-        [path_append(src_root,
-                     "relationship_annotation_{}.csv".format(name)) for name in ["testing", "training"]],
-        path_append(src_root, "relationship_annotation.csv")
+        sources=[
+            path_append(src_root, "relationship_annotation_{}.csv".format(name))
+            for name in ["testing", "training"]
+        ],
+        target=path_append(src_root, "relationship_annotation.csv"),
     )
     ku_dict_path = path_append(tar_root, ku_dict_path)
     build_ku_dict(exercise_src, ku_dict_path)

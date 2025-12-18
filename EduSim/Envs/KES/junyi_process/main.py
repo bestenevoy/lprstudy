@@ -29,7 +29,7 @@ sys.path.append(os.path.dirname(sys.path[0]))  # 这里要改为你自己的项�
 
 def extract_relations(src_root: str = "../raw_data/junyi/", tar_root: str = "../data/junyi/"):
     build_knowledge_graph(
-        src_root, tar_root,
+        src_root=src_root, tar_root=tar_root,
         ku_dict_path="graph_vertex.json",
         prerequisite_path="prerequisite.json",
         similarity_path="similarity.json",

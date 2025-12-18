@@ -13,7 +13,7 @@
 # limitations under the License.
 # ============================================================================
 # -*- coding:utf-8 _*-
-from gym.envs.registration import register
+from gymnasium.envs.registration import register
 from .Envs import KESASSISTEnv
 from .SimOS import train_eval
 from .spaces import ListSpace

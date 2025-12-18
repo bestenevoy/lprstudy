@@ -16,7 +16,7 @@
 # coding: utf-8
 
 from pprint import pformat
-import gym
+import gymnasium as gym
 
 
 

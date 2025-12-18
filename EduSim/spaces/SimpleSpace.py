@@ -14,7 +14,7 @@
 # ============================================================================
 # coding: utf-8
 from pprint import pformat
-from gym.spaces import Space
+from gymnasium.spaces import Space
 
 __all__ = ["ListSpace"]
 

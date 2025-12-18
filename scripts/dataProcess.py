@@ -16,9 +16,9 @@
 import subprocess
 import sys
 import os
+sys.path.append(os.path.dirname(sys.path[0]))  # 这里要改为你自己的项目的主目录
 from EduSim.utils import get_proj_path, get_raw_data_path
 from EduSim.Envs.KES.junyi_process import extract_relations, build_json_sequence
-sys.path.append(os.path.dirname(sys.path[0]))  # 这里要改为你自己的项目的主目录
 already_log_finish_list = []
 
 
@@ -63,6 +63,7 @@ def get_available_devices():
 if __name__ == '__main__':
     cuda_device = 2
     print('Data process start')
+    print(get_proj_path())
     src_root = f'{get_raw_data_path()}/junyi/'
     tar_root = f'{get_proj_path()}/data/dataProcess/junyi/'
     os.makedirs(tar_root, exist_ok=True)

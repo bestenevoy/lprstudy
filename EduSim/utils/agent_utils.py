@@ -19,7 +19,7 @@ from mindspore import nn, ops
 
 
 def get_raw_data_path():
-    return '/home/tmp/qyli/data/'  # change to your raw data path
+    return '/home/wrz/code/GEHRL/data/'  # change to your raw data path
 
 
 def get_proj_path(proj_name='GEHRL_mindspore'):

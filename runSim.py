@@ -25,9 +25,9 @@ from EduSim.utils import get_raw_data_path
 from EduSim.Envs.KES_ASSIST15 import KESASSISTEnv, kes_assist_train_eval
 from EduSim import AbstractAgent
 
-cur_path = os.path.abspath(os.path.dirname(__file__))
-sys.path.append(cur_path[:cur_path.find('GEHRL_mindspore')] + 'GEHRL_mindspore')  # 这里要改为你自己的项目的主目录
-os.environ['CUDA_VISIBLE_DEVICES'] = '5'  # 必须放在import各种python的包之前运行
+# cur_path = os.path.abspath(os.path.dirname(__file__))
+# sys.path.append(cur_path[:cur_path.find('GEHRL_mindspore')] + 'GEHRL_mindspore')  # 这里要改为你自己的项目的主目录
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'  # 必须放在import各种python的包之前运行
 
 # 忽略warning的输出
 warnings.filterwarnings('ignore')

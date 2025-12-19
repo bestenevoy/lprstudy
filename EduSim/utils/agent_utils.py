@@ -16,7 +16,7 @@ import os
 import numpy as np
 import mindspore
 from mindspore import nn, ops
-
+from pathlib import Path
 
 def get_raw_data_path():
     return '/home/wrz/code/GEHRL/data/'  # change to your raw data path
@@ -28,10 +28,15 @@ def get_proj_path(proj_name='GEHRL_mindspore'):
     :return:
     """
     # 获取当前所在文件的路径
-    cur_path = os.path.abspath(os.path.dirname(__file__))
+    # cur_path = os.path.abspath(os.path.dirname(__file__))
+    cur_path = Path(__file__).parent.parent.parent
+    return cur_path
+    # print(cur_path)
+    # exit(0)
 
     # 获取根目录
-    return cur_path[:cur_path.find(proj_name)] + proj_name
+    # return cur_path[:cur_path.find(proj_name)] + proj_name
+    
 
 
 def mean_entropy_cal(dist):  # [bz, cat_num]

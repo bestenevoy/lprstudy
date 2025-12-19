@@ -30,7 +30,7 @@ from EduSim.deep_model import DKTnet
 from EduSim.utils import get_proj_path, mds_concat
 
 cur_path = os.path.abspath(os.path.dirname(__file__))
-sys.path.append(cur_path[:cur_path.find('GEHRL_mindspore')] + 'GEHRL_mindspore')  # 这里要改为你自己的项目的主目录
+sys.path.append(cur_path[:cur_path.find('GEHRL')] + 'GEHRL')  # 这里要改为你自己的项目的主目录
 
 
 class MyDataset:

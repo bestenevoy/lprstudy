@@ -16,7 +16,9 @@
 import subprocess
 import sys
 import os
-sys.path.append(os.path.dirname(sys.path[0]))  # 这里要改为你自己的项目的主目录
+# print(os.path.dirname(sys.path[0]))
+# exit(0)
+# sys.path.append(os.path.dirname(sys.path[0]))  # 这里要改为你自己的项目的主目录
 from EduSim.utils import get_proj_path, get_raw_data_path
 from EduSim.Envs.KES.junyi_process import extract_relations, build_json_sequence
 already_log_finish_list = []
@@ -49,7 +51,7 @@ def get_available_devices():
                 if '%' in gpu_sta and '|' not in gpu_sta:
                     cals.append(int(gpu_sta[:-1]))
             used_mem = mems[0]
-            # all_mem = mems[1]
+
             used_mem = used_mem / 1024
             cal_used = cals[-1]
             if cal_used <= 5 and used_mem <= 0.85:
@@ -72,16 +74,16 @@ if __name__ == '__main__':
 
     os.system(f'python {get_proj_path()}/EduSim/Envs/KES/meta/split_data.py')
     os.system(f'python {get_proj_path()}/EduSim/Envs/KES/BuildTransitionGraph.py')
-    os.system(f'python {get_proj_path()}/EduSim/Envs/KES_ASSIST15/BuildGraph.py')
-    os.system(f'python {get_proj_path()}/EduSim/Envs/KES_ASSIST09/BuildGraph.py')
+    # os.system(f'python {get_proj_path()}/EduSim/Envs/KES_ASSIST15/BuildGraph.py')
+    # os.system(f'python {get_proj_path()}/EduSim/Envs/KES_ASSIST09/BuildGraph.py')
 
     os.system(f'CUDA_VISIBLE_DEVICES={cuda_device} python {get_proj_path()}/EduSim/Envs/KES/envDKT.py')
-    os.system(f'CUDA_VISIBLE_DEVICES={cuda_device} python {get_proj_path()}/EduSim/Envs/KES_ASSIST09/envDKT.py')
-    os.system(f'CUDA_VISIBLE_DEVICES={cuda_device} python {get_proj_path()}/EduSim/Envs/KES_ASSIST15/envDKT.py')
+    # os.system(f'CUDA_VISIBLE_DEVICES={cuda_device} python {get_proj_path()}/EduSim/Envs/KES_ASSIST09/envDKT.py')
+    # os.system(f'CUDA_VISIBLE_DEVICES={cuda_device} python {get_proj_path()}/EduSim/Envs/KES_ASSIST15/envDKT.py')
 
     os.system(f'CUDA_VISIBLE_DEVICES={cuda_device} python {get_proj_path()}/EduSim/Envs/GraphEmbedding.py 1')  # KSS
-    os.system(f'CUDA_VISIBLE_DEVICES={cuda_device} python {get_proj_path()}/EduSim/Envs/GraphEmbedding.py 2')  # junyi
+    # os.system(f'CUDA_VISIBLE_DEVICES={cuda_device} python {get_proj_path()}/EduSim/Envs/GraphEmbedding.py 2')  # junyi
 
-    os.system(f'CUDA_VISIBLE_DEVICES={cuda_device} python {get_proj_path()}/EduSim/Envs/GraphEmbedding.py 3')
+    # os.system(f'CUDA_VISIBLE_DEVICES={cuda_device} python {get_proj_path()}/EduSim/Envs/GraphEmbedding.py 3')
 
-    os.system(f'CUDA_VISIBLE_DEVICES={cuda_device} python {get_proj_path()}/EduSim/Envs/GraphEmbedding.py 4')
+    # os.system(f'CUDA_VISIBLE_DEVICES={cuda_device} python {get_proj_path()}/EduSim/Envs/GraphEmbedding.py 4')

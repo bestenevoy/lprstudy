@@ -22,7 +22,7 @@ import networkx as nx
 from tqdm import tqdm
 from EduSim.utils import get_proj_path, get_raw_data_path
 cur_path = os.path.abspath(os.path.dirname(__file__))
-sys.path.append(cur_path[:cur_path.find('GEHRL_mindspore')] + 'GEHRL_mindspore')  # 这里要改为你自己的项目的主目录
+sys.path.append(cur_path[:cur_path.find('GEHRL')] + 'GEHRL')  # 这里要改为你自己的项目的主目录
 
 
 warnings.filterwarnings('ignore')

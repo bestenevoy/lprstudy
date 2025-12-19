@@ -19,8 +19,8 @@ import random
 from longling import wf_open
 from tqdm import tqdm
 from EduSim.utils import get_proj_path
-cur_path = os.path.abspath(os.path.dirname(__file__))
-sys.path.append(cur_path[:cur_path.find('GEHRL_mindspore')] + 'GEHRL_mindspore')  # 这里要改为你自己的项目的主目录
+# cur_path = os.path.abspath(os.path.dirname(__file__))
+# sys.path.append(cur_path[:cur_path.find('GEHRL_mindspore')] + 'GEHRL_mindspore')  # 这里要改为你自己的项目的主目录
 
 data_path = f'{get_proj_path()}/data/dataProcess/junyi/student_log_kt_None'
 with open(data_path, 'r', encoding="utf-8") as f:

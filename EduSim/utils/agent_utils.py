@@ -98,7 +98,7 @@ def compute_dkt_loss(output, batch_data):
     num_skills = int(batch_data[0].shape[1] / 2)
     sequence_lengths = [int(mindspore.ops.sum(sample)) for sample in batch_data]
     target_corrects = mindspore.Tensor([])
-    target_ids = mindspore.Tensor([])
+    target_ids = mindspore.Tensor([], dtype=mindspore.int32)
     output = output.permute(1, 0, 2)
     for episode in range(batch_data.shape[0]):
         tmp_target_id = mindspore.ops.Argmax(axis=-1)(batch_data[episode, :, :])
@@ -108,6 +108,7 @@ def compute_dkt_loss(output, batch_data):
         target_correct = mindspore.ops.where(tmp_target_id > num_skills - 1, ones, zeros).unsqueeze(1).unsqueeze(0)
         target_id = mindspore.ops.where(tmp_target_id > num_skills - 1, tmp_target_id - num_skills, tmp_target_id)
         target_id = mindspore.ops.clip_by_value(target_id, 0, num_skills - 1)
+        target_id = mindspore.ops.cast(target_id, mindspore.int32)
         # target_id注意需要整体位移一格（CPU 下 roll 可能不可用）
         if target_id.shape[0] > 1:
             target_id = mindspore.ops.cat((target_id[1:], target_id[:1]), 0)
@@ -115,6 +116,7 @@ def compute_dkt_loss(output, batch_data):
         # 放入batch里面
         target_ids = mds_concat((target_ids, target_id), 0)
         target_corrects = mds_concat((target_corrects, target_correct), 0)
+    target_ids = mindspore.ops.clip_by_value(target_ids, 0, num_skills - 1)
     logits = output.gather_elements(dim=2, index=target_ids)
     loss = mindspore.Tensor([0.0])
     for i, sequence_length in enumerate(sequence_lengths):

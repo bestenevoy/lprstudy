@@ -246,6 +246,7 @@ class EnvDKTtrainer:
                               unsqueeze(1).unsqueeze(0))
             target_id = mindspore.ops.where(tmp_target_id > self.num_skills - 1,
                                             tmp_target_id - self.num_skills, tmp_target_id)  # [sequence_length]
+            target_id = mindspore.ops.clip_by_value(target_id, 0, self.num_skills - 1)
             # target_id注意需要整体位移一格（CPU 下 roll 可能不可用）
             if target_id.shape[0] > 1:
                 target_id = mindspore.ops.concat((target_id[1:], target_id[:1]), axis=0)

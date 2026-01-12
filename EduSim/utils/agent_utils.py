@@ -117,6 +117,13 @@ def compute_dkt_loss(output, batch_data):
         target_ids = mds_concat((target_ids, target_id), 0)
         target_corrects = mds_concat((target_corrects, target_correct), 0)
     target_ids = mindspore.ops.clip_by_value(target_ids, 0, num_skills - 1)
+    target_ids = mindspore.ops.cast(target_ids, mindspore.int32)
+    invalid = mindspore.ops.logical_or(target_ids < 0, target_ids >= num_skills)
+    if mindspore.ops.any(invalid).asnumpy().item():
+        t_min = int(mindspore.ops.min(target_ids).asnumpy().item())
+        t_max = int(mindspore.ops.max(target_ids).asnumpy().item())
+        print(f"Warning: target_ids out of range, min={t_min}, max={t_max}")
+        target_ids = mindspore.ops.where(invalid, mindspore.ops.zeros_like(target_ids), target_ids)
     logits = output.gather_elements(dim=2, index=target_ids)
     loss = mindspore.Tensor([0.0])
     for i, sequence_length in enumerate(sequence_lengths):

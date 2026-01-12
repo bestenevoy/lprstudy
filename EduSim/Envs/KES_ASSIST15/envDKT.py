@@ -259,6 +259,13 @@ class EnvDKTtrainer:
         # preds = mindspore.ops.sigmoid(logits)
         logits = mindspore.ops.sigmoid(output)
         target_ids = mindspore.ops.clip_by_value(target_ids, 0, self.num_skills - 1)
+        target_ids = mindspore.ops.cast(target_ids, mindspore.int32)
+        invalid = mindspore.ops.logical_or(target_ids < 0, target_ids >= self.num_skills)
+        if mindspore.ops.any(invalid).asnumpy().item():
+            t_min = int(mindspore.ops.min(target_ids).asnumpy().item())
+            t_max = int(mindspore.ops.max(target_ids).asnumpy().item())
+            print(f"Warning: target_ids out of range, min={t_min}, max={t_max}")
+            target_ids = mindspore.ops.where(invalid, mindspore.ops.zeros_like(target_ids), target_ids)
         preds = logits.gather_elements(dim=2, index=target_ids)
         loss = mindspore.Tensor([0.0])
         for i, sequence_length in enumerate(sequence_lengths):

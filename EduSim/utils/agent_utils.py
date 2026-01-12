@@ -19,7 +19,7 @@ from mindspore import nn, ops
 from pathlib import Path
 
 def get_raw_data_path():
-    return '/home/wrz/code/GEHRL/data/'  # change to your raw data path
+    return (get_proj_path() / "data").as_posix()
 
 
 def get_proj_path(proj_name='GEHRL_mindspore'):
@@ -107,8 +107,10 @@ def compute_dkt_loss(output, batch_data):
         # [sequence_length, 1]
         target_correct = mindspore.ops.where(tmp_target_id > num_skills - 1, ones, zeros).unsqueeze(1).unsqueeze(0)
         target_id = mindspore.ops.where(tmp_target_id > num_skills - 1, tmp_target_id - num_skills, tmp_target_id)
-        # target_id注意需要整体位移一格
-        target_id = mindspore.ops.roll(target_id, -1, 0).unsqueeze(1).unsqueeze(0)
+        # target_id注意需要整体位移一格（CPU 下 roll 可能不可用）
+        if target_id.shape[0] > 1:
+            target_id = mindspore.ops.cat((target_id[1:], target_id[:1]), 0)
+        target_id = target_id.unsqueeze(1).unsqueeze(0)
         # 放入batch里面
         target_ids = mds_concat((target_ids, target_id), 0)
         target_corrects = mds_concat((target_corrects, target_correct), 0)

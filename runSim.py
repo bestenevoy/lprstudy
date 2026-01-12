@@ -58,7 +58,8 @@ warnings.filterwarnings('ignore')
 
 
 def main():
-    context.set_context(device_target='GPU')
+    device_target = os.environ.get("GEHRL_DEVICE_TARGET", "CPU")
+    context.set_context(device_target=device_target)
 
     parser = ArgumentParser("learning_path_recommendation")
     simulator = ['KESassist15']

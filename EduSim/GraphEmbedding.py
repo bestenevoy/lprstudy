@@ -13,6 +13,7 @@
 # limitations under the License.
 # ============================================================================
 import random
+import pickle
 
 import sys
 import os
@@ -22,7 +23,6 @@ import networkx as nx
 from gensim.models import Word2Vec
 from EduSim.utils import get_proj_path, get_raw_data_path
 from EduSim.Envs.KES import KESEnv
-from EduSim.Envs.KES_ASSIST15 import KESASSISTEnv
 
 # cur_path = os.path.abspath(os.path.dirname(__file__))
 # sys.path.append(cur_path[:cur_path.find('GEHRL_mindspore')] + 'GEHRL_mindspore')  # 这里要改为你自己的项目的主目录
@@ -222,11 +222,16 @@ if __name__ == '__main__':
     # 环境设定
     # envKSS = KSSEnv()
 
-    dataRecPath = f'{get_proj_path()}/data/dataProcess/junyi/dataRec'
-    envKES = KESEnv(dataRec_path=dataRecPath)
-
-    dataRecPath = f'{get_raw_data_path()}/ASSISTments2015/processed/'
-    envKESASSIST = KESASSISTEnv(dataRec_path=dataRecPath)
+    dataset = os.environ.get("GEHRL_DATASET", "assist15").strip().lower()
+    if dataset in ("junyi", "kes", "kes_junyi"):
+        dataRecPath = f'{get_proj_path()}/data/dataProcess/junyi/dataRec'
+        envKES = KESEnv(dataRec_path=dataRecPath)
+        graph = envKES.knowledge_structure
+    elif dataset in ("assist15", "assist", "kesassist15"):
+        with open(f"{get_proj_path()}/data/dataProcess/ASSISTments2015/nxgraph.pkl", "rb") as file:
+            graph = pickle.loads(file.read())
+    else:
+        raise ValueError(f"Unsupported GEHRL_DATASET: {dataset}")
 
     # dataRecPath = f'{get_raw_data_path()}/ASSISTments2009/assist09.npz'
     # envKESASSIST09 = KESASSIST09Env(dataRec_path=dataRecPath)
@@ -236,8 +241,7 @@ if __name__ == '__main__':
     embed_type = 'node2vec'
     is_directed = True
     test_flag = False
-    # graph = envKES.knowledge_structure
-    graph = envKESASSIST.knowledge_structure
+    # graph set by dataset selection above
 
     # if args == '1':
     #     graph = envKSS.knowledge_structure

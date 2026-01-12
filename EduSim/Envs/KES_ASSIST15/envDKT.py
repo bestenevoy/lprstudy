@@ -73,7 +73,7 @@ class EnvDKTtrainer:
         # 实验设置
 
         self.train_goal = train_goal
-        self.test_only = True
+        self.test_only = os.environ.get("GEHRL_DKT_TEST_ONLY", "0") == "1"
         print('Current training goal is:' + self.train_goal)
 
 
@@ -246,8 +246,10 @@ class EnvDKTtrainer:
                               unsqueeze(1).unsqueeze(0))
             target_id = mindspore.ops.where(tmp_target_id > self.num_skills - 1,
                                             tmp_target_id - self.num_skills, tmp_target_id)  # [sequence_length]
-            # target_id注意需要整体位移一格
-            target_id = mindspore.ops.roll(target_id, -1, 0).unsqueeze(1).unsqueeze(0)  # [1, sequence_length, 1]
+            # target_id注意需要整体位移一格（CPU 下 roll 可能不可用）
+            if target_id.shape[0] > 1:
+                target_id = mindspore.ops.concat((target_id[1:], target_id[:1]), axis=0)
+            target_id = target_id.unsqueeze(1).unsqueeze(0)  # [1, sequence_length, 1]
             # 放入batch里面
             target_ids = mds_concat((target_ids, target_id), 0)
             target_corrects = mds_concat((target_corrects, target_correct), 0)
@@ -259,7 +261,7 @@ class EnvDKTtrainer:
         for i, sequence_length in enumerate(sequence_lengths):
             if sequence_length <= 1:
                 continue
-            a = logits[i, 0:sequence_length - 1]
+            a = preds[i, 0:sequence_length - 1]
             b = target_corrects[i, 1:sequence_length]
             loss = loss + self.loss_f(a, b)
 
@@ -267,9 +269,10 @@ class EnvDKTtrainer:
 
 
 if __name__ == '__main__':
-    os.environ["CUDA_VISIBLE_DEVICES"] = "5"
-    context.set_context(device_target='GPU')
-    handler = EnvDKTtrainer(num_skills=100, train_goal='env_DKT')
+    device_target = os.environ.get("GEHRL_DEVICE_TARGET", "CPU")
+    context.set_context(device_target=device_target)
+    train_goal = os.environ.get("GEHRL_DKT_TRAIN_GOAL", "env_DKT")
+    handler = EnvDKTtrainer(num_skills=100, train_goal=train_goal)
     handler.train()
     # handler_A = EnvDKTtrainer(num_skills=100, train_goal='agent_DKT')
     # handler_A.train()

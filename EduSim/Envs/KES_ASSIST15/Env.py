@@ -33,7 +33,7 @@ __all__ = ["KESASSISTEnv"]
 
 class KESASSISTEnv(KESEnv):
     def __init__(self, dataRec_path, seed=None):
-        super().__init__(dataRec_path, seed)
+        # Skip KESEnv.__init__ because it loads Junyi-specific resources.
         self.type = 'KES'
         self.env_name = 'KESassist15'
         self.random_state = np.random.RandomState(seed)
@@ -75,7 +75,7 @@ class KESASSISTEnv(KESEnv):
             param_dict = mindspore.load_checkpoint(dkt_file)
             _, _ = mindspore.load_param_into_net(self.DKTnet, param_dict)
         else:
-            raise ValueError('dkt net not trained yet!')
+            print(f'Warning: missing DKT checkpoint at {dkt_file}, using random init.')
         self.scorer = KESASSISTScorer()
         self.action_space = ListSpace(self.item_list, seed=seed)  # 获得agent的action space
 

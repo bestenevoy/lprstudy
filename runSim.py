@@ -27,7 +27,9 @@ from EduSim import AbstractAgent
 
 # cur_path = os.path.abspath(os.path.dirname(__file__))
 # sys.path.append(cur_path[:cur_path.find('GEHRL_mindspore')] + 'GEHRL_mindspore')  # 这里要改为你自己的项目的主目录
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'  # 必须放在import各种python的包之前运行
+# 必须放在import各种python的包之前运行
+
+os.environ['CUDA_VISIBLE_DEVICES'] = os.environ.get("CUDA_VISIBLE_DEVICES", "0")
 
 # 忽略warning的输出
 warnings.filterwarnings('ignore')

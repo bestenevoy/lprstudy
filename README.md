@@ -1,3 +1,15 @@
+cd /home/wrz/code/GEHRL
+source .venv/bin/activate
+
+# ========== 步骤2：核心命令！配置环境变量（强制生效，优先级最高） ==========
+export CUDA_HOME=/usr/local/cuda-11.6
+export PATH=$CUDA_HOME/bin:$PATH
+# 重点！这行命令用绝对路径，并且用 LD_PRELOAD 兜底，防止链接器找不到
+export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
+export LD_PRELOAD=/usr/local/cuda-11.6/lib64/libcudnn.so.8:/usr/local/cuda-11.6/lib64/libcuda.so:$LD_PRELOAD
+
+conda activate uv
+
 export GEHRL_DEVICE_TARGET=GPU
 
 export  CUDA_VISIBLE_DEVICES=0

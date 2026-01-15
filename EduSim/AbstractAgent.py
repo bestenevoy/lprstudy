@@ -16,6 +16,7 @@
 import copy
 import time
 import os
+from collections import Counter
 import numpy as np
 
 import mindspore
@@ -157,6 +158,7 @@ class AbstractAgent:
         self.args['current_rec_log'] = []
         self.args['repe_abandon_list'] = []
         self.args['item_count_dict'] = {}
+        self.args['goal_debug'] = []
 
         self.state_t = []
         self.learner_targets = list(learner_profile[0]['target'])
@@ -275,6 +277,21 @@ class AbstractAgent:
             lines.append(f'reward:{reward}, target:{self.learner_targets}\n')
             if self.agent.name == 'HRL':
                 lines.append(f"goals: {self.args['episode_subgoals']} \n episode_reward: {reward} \n")
+                if self.args.get('debug_goal_stats'):
+                    goal_counts = Counter(self.args['episode_subgoals'])
+                    top_goals = goal_counts.most_common(5)
+                    lines.append(
+                        f'goals_stats: total={len(self.args["episode_subgoals"])}, '
+                        f'unique={len(goal_counts)}, top5={top_goals} \n'
+                    )
+                    if self.args['goal_debug']:
+                        probs = [item[1] for item in self.args['goal_debug']]
+                        entropies = [item[2] for item in self.args['goal_debug']]
+                        lines.append(
+                            f'goal_policy: prob_mean={np.mean(probs):.4f}, '
+                            f'prob_min={np.min(probs):.4f}, prob_max={np.max(probs):.4f}, '
+                            f'entropy_mean={np.mean(entropies):.4f} \n'
+                        )
             else:
                 lines.append(f'episode_reward: {reward} \n')
 

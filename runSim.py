@@ -146,6 +146,7 @@ def main():
     parser.add_argument('--HRL_asynchronous_train', type=bool, default=True)
     parser.add_argument('--HRL_as_tr_episode', type=int, default=1)
     parser.add_argument('--HRL_embcan_num', type=int, default=60)
+    parser.add_argument('--debug_goal_stats', type=bool, default=False)
     args = parser.parse_args().__dict__
     args['seed'] = seeds[args['repeat_num'] - 1]
     if args['simulator'] == 'KESassist15':

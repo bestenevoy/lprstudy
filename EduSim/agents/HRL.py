@@ -18,7 +18,7 @@ import numpy as np
 import mindspore
 from mindspore import nn
 from tqdm import tqdm
-from EduSim.utils import get_proj_path, mds_concat
+from EduSim.utils import get_proj_path, mds_concat, mean_entropy_cal
 from .PPO import PPO
 from .AC import ActorCritic
 
@@ -53,6 +53,13 @@ class HRL(nn.Cell):
         self.args = args
         self.big_episode_reward_DKT_states = []
         self.RNN_encoder_output_dim = RNN_encoder_output_dim
+        max_goal_env = os.environ.get("GEHRL_MAX_GOAL_ID", str(self.output_dim - 1))
+        try:
+            self.max_goal_id = int(max_goal_env)
+        except ValueError:
+            self.max_goal_id = self.output_dim - 1
+        self.max_goal_id = max(0, min(self.max_goal_id, self.output_dim - 1))
+        self.h_candidates = [i for i in range(self.max_goal_id + 1)]
 
         self.model_settings = {
             'graph_embedding_input': args['graph_embedding_input'],  # graph embedding or not
@@ -250,10 +257,14 @@ class HRL(nn.Cell):
         if not self.sub_episode_running:
             if (self.model_settings['asynchronous training'] and
                     self.episode_count < self.model_settings['as_tr_episode']):
-                self.cur_sub_goal = random.choice([i for i in range(len(list(self.env.action_space)))])
+                self.cur_sub_goal = random.choice(self.h_candidates)
             else:
-                h_candidates = [i for i in range(len(list(self.env.action_space)))]
-                self.cur_sub_goal = self.meta_controller.step(states_dict, candidates=h_candidates)
+                self.cur_sub_goal = self.meta_controller.step(states_dict, candidates=self.h_candidates)
+            if self.args.get('debug_goal_stats'):
+                probs = self.meta_controller.policy_net(states_dict)
+                chosen_prob = float(probs[0][self.cur_sub_goal].asnumpy().item())
+                entropy = float((-mean_entropy_cal(probs)).asnumpy().item())
+                self.args['goal_debug'].append((int(self.cur_sub_goal), chosen_prob, entropy))
 
             if self.big_episode[0]['states'].shape[0] != 0:
                 # 错一位添加big_episode的next state
